@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "GBF Raiders 2: The Chrome Extenstion Identity",
 	"description": "From The Creator Of GBFRaiders, A Chrome Extension That Shows A List Of Current Raids For GBF Right In Your Browser",
-	"version": "1.3",
+	"version": "1.4",
 	"options_ui":
 	{
 		"page": "/views/options.html",

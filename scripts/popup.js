@@ -27,7 +27,7 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 				button.innerHTML = "Join";
 			} else if ( backgroundPage.raids[ i ].status === "clicked" ) {
 				button.classList.add( "ui", "small", "grey", "button" );
-				button.innerHTML = "Clicked";
+				button.innerHTML = "Copied";
 			} else if ( backgroundPage.raids[ i ].status === "joined" ) {
 				button.classList.add( "ui", "small", "positive", "button" );
 				button.innerHTML = "Joined";
@@ -217,7 +217,7 @@ function JoinButtonClicked( id ) {
 
 	try {
 		backgroundPage.JoinRaid( id );
-		document.getElementById( id + "-btn" ).innerHTML = "Clicked";
+		document.getElementById( id + "-btn" ).innerHTML = "Copied";
 		document.getElementById( id + '-btn' ).classList.remove( "primary" );
 		document.getElementById( id + '-btn' ).classList.add( "grey" );
 		backgroundPage.raids[ backgroundPage.FindRaidIndex( id ) ].status = "clicked";
