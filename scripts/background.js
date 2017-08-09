@@ -153,18 +153,27 @@ socket.on( 'tweet', function ( data ) {
 					} else {
 						title = raidConfig.english;
 					}
-					chrome.notifications.create( {
-						type: "basic",
-						iconUrl: 'https://www.gbfraiders.com/' + raidConfig.image,
-						title: title,
-						message: 'ID:            ' + data.id + '\nTime:        ' + moment( data.time ).format( 'MMM DD HH:mm:ss' ) + '\nUser:        ' + data.user + '\nMessage: ' + data.message,
-						isClickable: true
-					}, function ( notificationId ) {
-						notifications.push( {
-							raid: data,
-							notification: notificationId
+					try {
+						fetch( 'https://www.gbfraiders.com' + raidConfig.image ).then( function ( response ) {
+							return response.blob();
+						} ).then( function ( myBlob ) {
+							var objectURL = URL.createObjectURL( myBlob );
+							chrome.notifications.create( {
+								type: "basic",
+								iconUrl: objectURL,
+								title: title,
+								message: 'ID:            ' + data.id + '\nTime:        ' + moment( data.time ).format( 'MMM DD HH:mm:ss' ) + '\nUser:        ' + data.user + '\nMessage: ' + data.message,
+								isClickable: true
+							}, function ( notificationId ) {
+								notifications.push( {
+									raid: data,
+									notification: notificationId
+								} );
+							} );
 						} );
-					} );
+					} catch ( error ) {
+						console.log( "Error getting raid image or creating notification: " + error );
+					}
 				}
 				console.log( "Successfully sent raid notification." );
 			} catch ( error ) {
