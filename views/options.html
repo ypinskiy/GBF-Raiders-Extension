@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>GBF Raiders Extension Options</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link href="/util/semantic.css" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Open Sans', sans-serif;
+			font-size: 100%;
+			text-align: center;
+		}
+
+		#settings-table td {
+			padding: 10px;
+		}
+
+		.message {
+			padding: 10px;
+			margin-bottom: 10px;
+		}
+
+		label {
+			margin-right: 5px;
+		}
+
+		#save {
+			margin-bottom: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="message">Click on "Select" checkbox near each raid name that you want to receive new Tweets for. If a raid is selected, you can click on "Track" near that raid to receive desktop notifications for it.</div>
+	<table id="settings-table" class="ui unstackable celled striped table">
+		<tbody id="container">
+			<tr><td>No raids loaded yet!</td></tr>
+		</tbody>
+	</table>
+	<button id="save" class="ui primary large button">Save</button>
+	<script src="/util/jquery-3.2.1.js"></script>
+	<script src="/util/semantic.js"></script>
+	<script src="/scripts/options.js"></script>
+</body>
+
+</html>

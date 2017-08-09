@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>GBF Raiders Extension</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link href="/util/semantic.css" rel="stylesheet">
+	<link href="/util/sweetalert.css" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Open Sans', sans-serif;
+			font-size: 100%;
+		}
+
+		#container {
+			width: auto;
+			min-width: 600px;
+			max-width: 800px;
+			height: auto;
+			min-height: 600px;
+			max-height: 800px;
+		}
+
+		#raid-table th {
+			border: 1px solid black;
+			text-align: center;
+			padding: 5px;
+		}
+
+		#raid-table td {
+			text-align: center;
+		}
+	</style>
+	<script src="/util/jquery-3.2.1.js"></script>
+	<script src="/util/semantic.js"></script>
+	<script src="/util/sweetalert.js"></script>
+	<script src="/util/moment.js"></script>
+	<script src="/scripts/popup.js"></script>
+</head>
+
+<body>
+	<div id="container">
+		<table id="raid-table" class="ui unstackable striped celled table">
+			<thead>
+				<tr>
+					<th>Raid</th>
+					<th>ID</th>
+					<th>Message</th>
+					<th>Time</th>
+					<th>Join</th>
+				</tr>
+			</thead>
+			<tbody id="raid-table-body">
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>
