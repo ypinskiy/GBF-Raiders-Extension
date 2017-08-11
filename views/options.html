@@ -10,6 +10,7 @@
 			font-family: 'Open Sans', sans-serif;
 			font-size: 100%;
 			text-align: center;
+			width: 700px;
 		}
 
 		#settings-table td {
@@ -28,14 +29,49 @@
 		#save {
 			margin-bottom: 5px;
 		}
+
+		.ui.checkbox .box:before,
+		.ui.checkbox label:before {
+			top: 7px;
+		}
+
+		.ui.checkbox .box:after,
+		.ui.checkbox label:after {
+			top: 7px;
+		}
+
+		#header-img {
+			width: 100%;
+			height: auto;
+			margin-bottom: 5px;
+		}
+
+		.ui.checkbox {
+			margin-bottom: 10px;
+		}
+
+		.ui.selection.dropdown {
+			margin-left: 5px;
+		}
 	</style>
 </head>
 
 <body>
+	<img id="header-img" src="/assets/GBFRaidersWeb.png">
 	<div class="message">Click on "Select" checkbox near each raid name that you want to receive new Tweets for. If a raid is selected, you can click on "Track" near that raid to receive desktop notifications for it.</div>
+	<div id="show-message" class="ui checkbox">
+		<label>Show Twitter Message</label>
+		<input id="show-message-input" type="checkbox" tabindex="0" class="hidden">
+	</div>
+	<div id="show-time" class="ui checkbox">
+		<label>Show Time Posted</label>
+		<input id="show-time-input" type="checkbox" tabindex="0" class="hidden">
+	</div>
 	<table id="settings-table" class="ui unstackable celled striped table">
 		<tbody id="container">
-			<tr><td>No raids loaded yet!</td></tr>
+			<tr>
+				<td>No raids loaded yet!</td>
+			</tr>
 		</tbody>
 	</table>
 	<button id="save" class="ui primary large button">Save</button>

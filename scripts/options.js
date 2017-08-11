@@ -17,7 +17,19 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 
 	console.log( "Sorted raids. Adding to page..." );
 	for ( var i = 0; i < backgroundPage.raidConfigs.length; i++ ) {
-		document.getElementById( "container" ).innerHTML += '<tr><td>' + backgroundPage.raidConfigs[ i ].english + '</td><td><label for="' + backgroundPage.raidConfigs[ i ].room + '-select">Select</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-select" type="checkbox"></td><td><label for="' + backgroundPage.raidConfigs[ i ].room + '-track">Track</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-track" type="checkbox"></td></tr>';
+		var row = '<tr>';
+		row += '<td>' + backgroundPage.raidConfigs[ i ].english + '</td>';
+		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-select">Select</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-select" type="checkbox"></td>';
+		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-track">Track</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-track" type="checkbox"></td>';
+		row += '<td>Sound Choice<div id="' + backgroundPage.raidConfigs[ i ].room + '-sound" class="ui selection dropdown"><input id="' + backgroundPage.raidConfigs[ i ].room + '-sound-input" type="hidden" name="formatting" value="none"><i class="dropdown icon"></i><div class="default text">Sound Choice</div><div class="menu">';
+		row += '<div class="item" data-value="none">None</div>';
+		row += '<div class="item" data-value="beeps">Beeps Appear</div>';
+		row += '<div class="item" data-value="lily-event-ringring">GBF - Lily (Event) - Ring Ring</div>';
+		row += '<div class="item" data-value="andira-oniichan">GBF - Andira - Onii-chan</div>';
+		row += '<div class="item" data-value="titanfall-droppingnow">Titanfall - Dropping Now</div>';
+		row += '</div></div></td>';
+		row += '</tr>';
+		document.getElementById( "container" ).innerHTML += row;
 	}
 
 	chrome.storage.sync.get( {
@@ -33,10 +45,38 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		trackedRaids: []
 	}, function ( items ) {
 		for ( var i = 0; i < items.trackedRaids.length; i++ ) {
-			console.log( "Raid was already subscribed to. Room: " + items.trackedRaids[ i ] );
+			console.log( "Raid was already tracked. Room: " + items.trackedRaids[ i ] );
 			document.getElementById( items.trackedRaids[ i ] + '-track' ).checked = true;
 		}
 	} );
+
+	chrome.storage.sync.get( {
+		loudRaids: []
+	}, function ( items ) {
+		for ( var i = 0; i < items.loudRaids.length; i++ ) {
+			console.log( "Raid was already loud. Room: " + items.loudRaids[ i ].room );
+			document.getElementById( items.loudRaids[ i ].room + '-sound-input' ).value = items.loudRaids[ i ].choice;
+		}
+		console.log( "Setting up dropdowns..." );
+		$( ".ui.selection.dropdown" ).dropdown();
+	} );
+
+	chrome.storage.sync.get( {
+		showSettings: {
+			message: false,
+			time: false
+		}
+	}, function ( items ) {
+		if ( items.showSettings.message ) {
+			document.getElementById( "show-message-input" ).checked = true;
+		}
+		if ( items.showSettings.time ) {
+			document.getElementById( "show-time-input" ).checked = true;
+		}
+		console.log( "Setting up checkboxes..." );
+		$( '.ui.checkbox' ).checkbox();
+	} );
+
 
 	document.getElementById( "save" ).addEventListener( "click", function ( evt ) {
 		console.log( "Saved button clicked." );
@@ -58,9 +98,33 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		}
 		console.log( "Went through all tracked raid inputs. Number of tracked raids: " + trackedRaids.length );
 
+		var loudRaids = [];
+		for ( var i = 0; i < backgroundPage.raidConfigs.length; i++ ) {
+			if ( document.getElementById( backgroundPage.raidConfigs[ i ].room + '-sound-input' ).value !== "none" ) {
+				loudRaids.push( {
+					room: backgroundPage.raidConfigs[ i ].room,
+					choice: document.getElementById( backgroundPage.raidConfigs[ i ].room + '-sound-input' ).value
+				} );
+			}
+		}
+		console.log( "Went through all loud raid inputs. Number of loud raids: " + loudRaids.length );
+
+		var showSettings = {
+			message: false,
+			time: false
+		};
+		if ( document.getElementById( "show-message-input" ).checked ) {
+			showSettings.message = true;
+		}
+		if ( document.getElementById( "show-time-input" ).checked ) {
+			showSettings.time = true;
+		}
+
 		chrome.storage.sync.set( {
 			selectedRaids: selectedRaids,
-			trackedRaids: trackedRaids
+			trackedRaids: trackedRaids,
+			loudRaids: loudRaids,
+			showSettings: showSettings
 		}, function () {
 			console.log( "Saved raids!" );
 			document.getElementById( "save" ).innerHTML = "Saved!";

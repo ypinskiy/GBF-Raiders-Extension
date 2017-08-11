@@ -2,10 +2,21 @@ var socket = io.connect( 'https://www.gbfraiders.com/' );
 var raids = [];
 var raidConfigs = [];
 var trackedRaids = [];
+var loudRaids = [];
+var showSettings = {
+	message: false,
+	time: false
+};
 var notifications = [];
 var unseenRaids = 0;
 var raidLimit = 20;
 var wasDown = false;
+
+var beepsSoundNotif = new Audio( '/assets/sounds/Beeps_Appear.wav' );
+var lilyRingRingSoundNotif = new Audio( '/assets/sounds/Lily_Event_RingRing.mp3' );
+var andiraOniichanSoundNotif = new Audio( '/assets/sounds/Andira_Oniichan.mp3' );
+var titanfallDroppingNowSoundNotif = new Audio( '/assets/sounds/Titanfall_DroppingNow.mp3' );
+
 console.log( "Background script started." );
 
 setInterval( function () {
@@ -77,6 +88,17 @@ function IsTrackedRaid( room ) {
 	return result;
 }
 
+function IsLoudRaid( room ) {
+	var result = false;
+	for ( var i = 0; i < loudRaids.length; i++ ) {
+		if ( room === loudRaids[ i ].room ) {
+			result = true;
+			break;
+		}
+	}
+	return result;
+}
+
 function DoesRaidExist( id ) {
 	var result = false;
 	if ( FindRaid( id ) !== null ) {
@@ -133,6 +155,23 @@ chrome.storage.sync.get( {
 	trackedRaids = items.trackedRaids;
 } );
 
+chrome.storage.sync.get( {
+	loudRaids: []
+}, function ( items ) {
+	console.log( "Getting initial loud raids from storage..." );
+	loudRaids = items.loudRaids;
+} );
+
+chrome.storage.sync.get( {
+	showSettings: {
+		message: false,
+		time: false
+	}
+}, function ( items ) {
+	console.log( "Getting initial show settings from storage..." );
+	showSettings = items.showSettings;
+} );
+
 socket.on( 'tweet', function ( data ) {
 	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id );
 	if ( !DoesRaidExist( data.id ) ) {
@@ -180,6 +219,22 @@ socket.on( 'tweet', function ( data ) {
 				console.log( "Error sending notification: " + error );
 			}
 		}
+		if ( IsLoudRaid( data.room ) ) {
+			for ( var i = 0; i < loudRaids.length; i++ ) {
+				if ( loudRaids[ i ].room === data.room ) {
+					if ( loudRaids[ i ].choice === "beeps" ) {
+						beepsSoundNotif.play();
+					} else if ( loudRaids[ i ].choice === "lily-event-ringring" ) {
+						lilyRingRingSoundNotif.play();
+					} else if ( loudRaids[ i ].choice === "andira-oniichan" ) {
+						andiraOniichanSoundNotif.play();
+					} else if ( loudRaids[ i ].choice === "titanfall-droppingnow" ) {
+						titanfallDroppingNowSoundNotif.play();
+					}
+					break;
+				}
+			}
+		}
 		if ( raids.length > raidLimit ) {
 			console.log( "Too many raids. Removing oldest one..." );
 			raids.splice( raids.length - 1, 1 );
@@ -220,6 +275,12 @@ chrome.storage.onChanged.addListener( function ( changes, namespace ) {
 		} else if ( key === "trackedRaids" ) {
 			console.log( "Updating tracked raids..." );
 			trackedRaids = change.newValue;
+		} else if ( key === "loudRaids" ) {
+			console.log( "Updating loud raids..." );
+			loudRaids = change.newValue;
+		} else if ( key === "showSettings" ) {
+			console.log( "Updating show settings..." );
+			showSettings = change.newValue;
 		}
 	}
 	raids = [];

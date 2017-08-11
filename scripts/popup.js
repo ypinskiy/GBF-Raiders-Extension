@@ -5,6 +5,13 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
 
+	if (!backgroundPage.showSettings.message) {
+		document.getElementById("header-container").removeChild(document.getElementById("message-header"));
+	}
+	if (!backgroundPage.showSettings.time) {
+		document.getElementById("header-container").removeChild(document.getElementById("time-header"));
+	}
+
 	for ( var i = 0; i < backgroundPage.raids.length; i++ ) {
 		var raidConfig = backgroundPage.FindRaidConfig( backgroundPage.raids[ i ].room );
 		if ( raidConfig !== null ) {
@@ -41,8 +48,12 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
 			raidRow.appendChild( idTD );
-			raidRow.appendChild( messageTD );
-			raidRow.appendChild( timeTD );
+			if (backgroundPage.showSettings.message) {
+				raidRow.appendChild( messageTD );
+			}
+			if (backgroundPage.showSettings.time) {
+				raidRow.appendChild( timeTD );
+			}
 			raidRow.appendChild( buttonTD );
 			document.getElementById( "raid-table-body" ).appendChild( raidRow );
 		}
@@ -81,8 +92,12 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
 			raidRow.appendChild( idTD );
-			raidRow.appendChild( messageTD );
-			raidRow.appendChild( timeTD );
+			if (backgroundPage.showSettings.message) {
+				raidRow.appendChild( messageTD );
+			}
+			if (backgroundPage.showSettings.time) {
+				raidRow.appendChild( timeTD );
+			}
 			raidRow.appendChild( buttonTD );
 			document.getElementById( "raid-table-body" ).insertBefore( raidRow, document.getElementById( "raid-table-body" ).firstChild );
 
