@@ -5,11 +5,11 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
 
-	if (!backgroundPage.showSettings.message) {
-		document.getElementById("header-container").removeChild(document.getElementById("message-header"));
+	if ( !backgroundPage.showSettings.message ) {
+		document.getElementById( "header-container" ).removeChild( document.getElementById( "message-header" ) );
 	}
-	if (!backgroundPage.showSettings.time) {
-		document.getElementById("header-container").removeChild(document.getElementById("time-header"));
+	if ( !backgroundPage.showSettings.time ) {
+		document.getElementById( "header-container" ).removeChild( document.getElementById( "time-header" ) );
 	}
 
 	for ( var i = 0; i < backgroundPage.raids.length; i++ ) {
@@ -48,10 +48,10 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
 			raidRow.appendChild( idTD );
-			if (backgroundPage.showSettings.message) {
+			if ( backgroundPage.showSettings.message ) {
 				raidRow.appendChild( messageTD );
 			}
-			if (backgroundPage.showSettings.time) {
+			if ( backgroundPage.showSettings.time ) {
 				raidRow.appendChild( timeTD );
 			}
 			raidRow.appendChild( buttonTD );
@@ -92,10 +92,10 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
 			raidRow.appendChild( idTD );
-			if (backgroundPage.showSettings.message) {
+			if ( backgroundPage.showSettings.message ) {
 				raidRow.appendChild( messageTD );
 			}
-			if (backgroundPage.showSettings.time) {
+			if ( backgroundPage.showSettings.time ) {
 				raidRow.appendChild( timeTD );
 			}
 			raidRow.appendChild( buttonTD );
@@ -162,7 +162,7 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 				imageSize: '150x150',
 				timer: 2000
 			} );
-		}else if ( message.viramate.error === "api disabled" ) {
+		} else if ( message.viramate.error === "api disabled" ) {
 			document.getElementById( message.id + '-btn' ).classList.remove( "grey" );
 			document.getElementById( message.id + '-btn' ).classList.remove( "positive" );
 			document.getElementById( message.id + '-btn' ).classList.add( "negative" );
@@ -237,6 +237,9 @@ function JoinButtonClicked( id ) {
 		document.getElementById( id + '-btn' ).classList.add( "grey" );
 		backgroundPage.raids[ backgroundPage.FindRaidIndex( id ) ].status = "clicked";
 		console.log( "Sent message to Viramate successfully." );
+		if ( backgroundPage.showSettings.close ) {
+			window.close();
+		}
 	} catch ( error ) {
 		console.log( "Error sending message to Viramate: " + error );
 	}

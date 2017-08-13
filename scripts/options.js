@@ -3,10 +3,10 @@ console.log( "Options script started. Getting list of raids from background scri
 chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	backgroundPage.raidConfigs.sort( function ( a, b ) {
 		if ( a.english < b.english ) {
-			return -1
+			return -1;
 		};
 		if ( a.english > b.english ) {
-			return 1
+			return 1;
 		};
 		return 0;
 	} );
@@ -38,6 +38,7 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		for ( var i = 0; i < items.selectedRaids.length; i++ ) {
 			console.log( "Raid was already subscribed to. Room: " + items.selectedRaids[ i ] );
 			document.getElementById( items.selectedRaids[ i ] + '-select' ).checked = true;
+			document.getElementById( items.selectedRaids[ i ] + '-select' ).parentElement.parentElement.classList.add( "selected-raid" );
 		}
 	} );
 
@@ -64,7 +65,8 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	chrome.storage.sync.get( {
 		showSettings: {
 			message: false,
-			time: false
+			time: false,
+			close: false
 		}
 	}, function ( items ) {
 		if ( items.showSettings.message ) {
@@ -73,10 +75,12 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		if ( items.showSettings.time ) {
 			document.getElementById( "show-time-input" ).checked = true;
 		}
+		if ( items.showSettings.close ) {
+			document.getElementById( "close-click-input" ).checked = true;
+		}
 		console.log( "Setting up checkboxes..." );
 		$( '.ui.checkbox' ).checkbox();
 	} );
-
 
 	document.getElementById( "save" ).addEventListener( "click", function ( evt ) {
 		console.log( "Saved button clicked." );
@@ -111,13 +115,17 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 
 		var showSettings = {
 			message: false,
-			time: false
+			time: false,
+			close: false
 		};
 		if ( document.getElementById( "show-message-input" ).checked ) {
 			showSettings.message = true;
 		}
 		if ( document.getElementById( "show-time-input" ).checked ) {
 			showSettings.time = true;
+		}
+		if ( document.getElementById( "close-click-input" ).checked ) {
+			showSettings.close = true;
 		}
 
 		chrome.storage.sync.set( {

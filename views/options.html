@@ -10,16 +10,19 @@
 			font-family: 'Open Sans', sans-serif;
 			font-size: 100%;
 			text-align: center;
-			width: 700px;
 		}
 
 		#settings-table td {
-			padding: 10px;
+			white-space: nowrap;
 		}
 
 		.message {
 			padding: 10px;
 			margin-bottom: 10px;
+		}
+
+		.selected-raid {
+			background-color: antiquewhite !important;
 		}
 
 		label {
@@ -67,7 +70,11 @@
 		<label>Show Time Posted</label>
 		<input id="show-time-input" type="checkbox" tabindex="0" class="hidden">
 	</div>
-	<table id="settings-table" class="ui unstackable celled striped table">
+	<div id="close-click" class="ui checkbox">
+		<label>Close Extension After Button Click</label>
+		<input id="close-click-input" type="checkbox" tabindex="0" class="hidden">
+	</div>
+	<table id="settings-table" class="ui unstackable compact celled striped table">
 		<tbody id="container">
 			<tr>
 				<td>No raids loaded yet!</td>

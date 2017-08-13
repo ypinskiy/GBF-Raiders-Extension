@@ -5,7 +5,8 @@ var trackedRaids = [];
 var loudRaids = [];
 var showSettings = {
 	message: false,
-	time: false
+	time: false,
+	close: false
 };
 var notifications = [];
 var unseenRaids = 0;
