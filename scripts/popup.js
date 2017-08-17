@@ -29,17 +29,18 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = backgroundPage.raids[ i ].id + '-btn';
+			button.classList.add( "ui", "tiny", "button" );
 			if ( backgroundPage.raids[ i ].status === "unclicked" ) {
-				button.classList.add( "ui", "small", "primary", "button" );
+				button.classList.add( "primary" );
 				button.innerHTML = "Join";
 			} else if ( backgroundPage.raids[ i ].status === "clicked" ) {
-				button.classList.add( "ui", "small", "grey", "button" );
+				button.classList.add( "grey" );
 				button.innerHTML = "Copied";
 			} else if ( backgroundPage.raids[ i ].status === "joined" ) {
-				button.classList.add( "ui", "small", "positive", "button" );
+				button.classList.add( "positive" );
 				button.innerHTML = "Joined";
 			} else if ( backgroundPage.raids[ i ].status === "error" ) {
-				button.classList.add( "ui", "small", "negative", "button" );
+				button.classList.add( "negative" );
 				button.innerHTML = "Error";
 			}
 			button.addEventListener( 'click', function ( evt ) {
@@ -84,7 +85,7 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = message.raid.id + '-btn';
-			button.classList.add( "ui", "small", "primary", "button" );
+			button.classList.add( "ui", "tiny", "primary", "button" );
 			button.innerHTML = "Join"
 			button.addEventListener( 'click', function ( evt ) {
 				JoinButtonClicked( message.raid.id );
