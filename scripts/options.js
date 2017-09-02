@@ -63,6 +63,13 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	} );
 
 	chrome.storage.sync.get( {
+		viramateID: "fgpokpknehglcioijejfeebigdnbnokj"
+	}, function ( items ) {
+		console.log( "Getting initial viramate ID from storage..." );
+		document.getElementById( "viramate-id-input" ).value = items.viramateID;
+	} );
+
+	chrome.storage.sync.get( {
 		showSettings: {
 			message: false,
 			time: false,
@@ -128,16 +135,28 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 			showSettings.close = true;
 		}
 
+		var viramateID = document.getElementById( "viramate-id-input" ).value;
+
 		chrome.storage.sync.set( {
 			selectedRaids: selectedRaids,
 			trackedRaids: trackedRaids,
 			loudRaids: loudRaids,
-			showSettings: showSettings
+			showSettings: showSettings,
+			viramateID: viramateID
 		}, function () {
-			console.log( "Saved raids!" );
+			console.log( "Saved settings!" );
 			document.getElementById( "save" ).innerHTML = "Saved!";
 		} );
 	} );
+} );
+
+document.getElementById( "viramate-id-input" ).addEventListener( 'keypress', function ( event ) {
+	if ( event.which === 32 ) {
+		document.getElementById( "viramate-id" ).classList.add("error");
+		event.preventDefault();
+	} else {
+		document.getElementById( "viramate-id" ).classList.remove("error");
+	}
 } );
 
 var _gaq = _gaq || [];

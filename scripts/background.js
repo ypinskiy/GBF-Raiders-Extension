@@ -12,6 +12,13 @@ var notifications = [];
 var unseenRaids = 0;
 var raidLimit = 20;
 var wasDown = false;
+var viramateID = "fgpokpknehglcioijejfeebigdnbnokj";
+var viramateScript = document.createElement( 'iframe' );
+viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
+viramateScript.id = "viramate-api";
+viramateScript.width = 1;
+viramateScript.height = 1;
+document.body.appendChild( viramateScript );
 
 var beepsSoundNotif = new Audio( '/assets/sounds/Beeps_Appear.wav' );
 var lilyRingRingSoundNotif = new Audio( '/assets/sounds/Lily_Event_RingRing.mp3' );
@@ -173,6 +180,14 @@ chrome.storage.sync.get( {
 	showSettings = items.showSettings;
 } );
 
+chrome.storage.sync.get( {
+	viramateID: "fgpokpknehglcioijejfeebigdnbnokj"
+}, function ( items ) {
+	console.log( "Getting initial viramate ID from storage..." );
+	viramateID = items.viramateID;
+	viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
+} );
+
 socket.on( 'tweet', function ( data ) {
 	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id );
 	if ( !DoesRaidExist( data.id ) ) {
@@ -282,6 +297,10 @@ chrome.storage.onChanged.addListener( function ( changes, namespace ) {
 		} else if ( key === "showSettings" ) {
 			console.log( "Updating show settings..." );
 			showSettings = change.newValue;
+		} else if ( key === "viramateID" ) {
+			console.log( "Updating viramate ID..." );
+			viramateID = change.newValue;
+			viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
 		}
 	}
 	raids = [];
@@ -353,13 +372,6 @@ function onMessage( evt ) {
 var raidIDDiv = document.createElement( 'div' );
 raidIDDiv.id = "id-container";
 document.body.appendChild( raidIDDiv );
-
-var viramateScript = document.createElement( 'iframe' );
-viramateScript.src = "chrome-extension://fgpokpknehglcioijejfeebigdnbnokj/content/api.html";
-viramateScript.id = "viramate-api";
-viramateScript.width = 1;
-viramateScript.height = 1;
-document.body.appendChild( viramateScript );
 
 var _gaq = _gaq || [];
 _gaq.push( [ '_setAccount', 'UA-48921108-4' ] );

@@ -56,12 +56,23 @@
 		.ui.selection.dropdown {
 			margin-left: 5px;
 		}
+
+		#viramate-id {
+			margin-bottom: 5px;
+		}
 	</style>
 </head>
 
 <body>
 	<img id="header-img" src="/assets/GBFRaidersWeb.png">
 	<div class="message">Click on "Select" checkbox near each raid name that you want to receive new Tweets for. If a raid is selected, you can click on "Track" near that raid to receive desktop notifications for it.</div>
+	<div id="viramate-id" class="ui labeled input">
+		<div class="ui label">
+			Viramate ID:
+		</div>
+		<input id="viramate-id-input" type="text">
+	</div>
+	<br>
 	<div id="show-message" class="ui checkbox">
 		<label>Show Twitter Message</label>
 		<input id="show-message-input" type="checkbox" tabindex="0" class="hidden">
