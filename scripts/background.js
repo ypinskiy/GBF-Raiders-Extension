@@ -137,13 +137,25 @@ function GetRaidFromNotification( notificationId ) {
 	return result;
 }
 
-fetch( 'https://www.gbfraiders.com/getraids' ).then( function ( response ) {
+fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {
 	console.log( "Got response from server. Parsing to JSON..." );
 	return response.json();
 } ).then( function ( tempRaidConfigs ) {
 	raidConfigs = tempRaidConfigs;
 	console.log( "Parsed server response. Amount of raids: " + raidConfigs.length );
 } );
+
+setInterval(
+	function () {
+		fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {
+			console.log( "Got response from server. Parsing to JSON..." );
+			return response.json();
+		} ).then( function ( tempRaidConfigs ) {
+			raidConfigs = tempRaidConfigs;
+			console.log( "Parsed server response. Amount of raids: " + raidConfigs.length );
+		} );
+	}, 43200000
+);
 
 chrome.storage.sync.get( {
 	selectedRaids: []
