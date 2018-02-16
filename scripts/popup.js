@@ -5,6 +5,20 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
 
+	document.getElementById( "mute-btn" ).addEventListener( 'click', function ( event ) {
+		backgroundPage.muted = !backgroundPage.muted;
+		document.getElementById( "mute-btn" ).classList.toggle("primary");
+		document.getElementById( "mute-btn" ).classList.toggle("negative");
+		document.getElementById( "mute-btn" ).innerHTML = backgroundPage.muted ? 'Unmute<i class="unmute icon"></i>' : 'Mute<i class="mute icon"></i>';
+	} );
+
+	document.getElementById( "stop-btn" ).addEventListener( 'click', function ( event ) {
+		backgroundPage.stopped = !backgroundPage.stopped;
+		document.getElementById( "stop-btn" ).classList.toggle("primary");
+		document.getElementById( "stop-btn" ).classList.toggle("negative");
+		document.getElementById( "stop-btn" ).innerHTML = backgroundPage.stopped ? 'Start<i class="play icon"></i>' : 'Stop<i class="stop icon"></i>';
+	} );
+
 	if ( !backgroundPage.showSettings.message ) {
 		document.getElementById( "header-container" ).removeChild( document.getElementById( "message-header" ) );
 	}

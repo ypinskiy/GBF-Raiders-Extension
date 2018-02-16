@@ -12,6 +12,8 @@ var notifications = [];
 var unseenRaids = 0;
 var raidLimit = 20;
 var wasDown = false;
+var muted = false;
+var stopped = false;
 var viramateID = "fgpokpknehglcioijejfeebigdnbnokj";
 var viramateScript = document.createElement( 'iframe' );
 viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
@@ -202,7 +204,7 @@ chrome.storage.sync.get( {
 
 socket.on( 'tweet', function ( data ) {
 	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id );
-	if ( !DoesRaidExist( data.id ) ) {
+	if ( !DoesRaidExist( data.id ) && !stopped ) {
 		console.log( "Raid with this ID does not exist. Adding to raids array..." );
 		unseenRaids++;
 		raids.unshift( data );
@@ -247,7 +249,7 @@ socket.on( 'tweet', function ( data ) {
 				console.log( "Error sending notification: " + error );
 			}
 		}
-		if ( IsLoudRaid( data.room ) ) {
+		if ( IsLoudRaid( data.room ) && !muted ) {
 			for ( var i = 0; i < loudRaids.length; i++ ) {
 				if ( loudRaids[ i ].room === data.room ) {
 					if ( loudRaids[ i ].choice === "beeps" ) {
