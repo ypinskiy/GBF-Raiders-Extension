@@ -10,11 +10,11 @@
 	},
 	"icons":
 	{
-		"128": "/assets/GBFRaidersiconv2.png"
+		"128": "/assets/GBFRaidersIconv2.png"
 	},
 	"browser_action":
 	{
-		"default_icon": "/assets/GBFRaidersiconv2.png",
+		"default_icon": "/assets/GBFRaidersIconv2.png",
 		"default_popup": "/views/popup.html"
 	},
 	"background":
