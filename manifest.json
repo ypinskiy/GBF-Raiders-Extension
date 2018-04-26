@@ -6,7 +6,7 @@
 	"options_page": "/views/options.html",
 	"icons":
 	{
-		"128": "/assets/GBFRaidersiconv2.png"
+		"128": "/assets/GBFRaidersIconv2.png"
 	},
 	"browser_action":
 	{
