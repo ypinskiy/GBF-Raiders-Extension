@@ -4,6 +4,7 @@ console.log( "Popup script started." );
 chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
+	backgroundPage.RefreshRaidConfigs();
 
 	document.getElementById( "mute-btn" ).addEventListener( 'click', function ( event ) {
 		backgroundPage.muted = !backgroundPage.muted;
