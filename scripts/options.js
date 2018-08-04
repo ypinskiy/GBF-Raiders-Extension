@@ -1,6 +1,8 @@
 console.log( "Options script started. Getting list of raids from background script..." );
 
 chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
+	backgroundPage.RefreshRaidConfigs();
+	
 	backgroundPage.raidConfigs.sort( function ( a, b ) {
 		if ( a.english < b.english ) {
 			return -1;

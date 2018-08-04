@@ -151,6 +151,8 @@ function RefreshRaidConfigs() {
 
 setInterval( RefreshRaidConfigs, 21600000 );
 
+RefreshRaidConfigs();
+
 chrome.storage.sync.get( {
 	selectedRaids: []
 }, function ( items ) {
