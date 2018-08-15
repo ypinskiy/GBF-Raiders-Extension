@@ -21,9 +21,9 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	for ( var i = 0; i < backgroundPage.raidConfigs.length; i++ ) {
 		var row = '<tr>';
 		row += '<td>' + backgroundPage.raidConfigs[ i ].english + '</td>';
-		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-select">Select</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-select" type="checkbox"></td>';
-		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-track">Track</label><input id="' + backgroundPage.raidConfigs[ i ].room + '-track" type="checkbox"></td>';
-		row += '<td>Sound Choice<div id="' + backgroundPage.raidConfigs[ i ].room + '-sound" class="ui selection dropdown"><input id="' + backgroundPage.raidConfigs[ i ].room + '-sound-input" type="hidden" name="formatting" value="none"><i class="dropdown icon"></i><div class="default text">Sound Choice</div><div class="menu">';
+		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-select">Select</label><input class="select-box" id="' + backgroundPage.raidConfigs[ i ].room + '-select" type="checkbox"></td>';
+		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-track">Track</label><input class="track-box" id="' + backgroundPage.raidConfigs[ i ].room + '-track" type="checkbox"></td>';
+		row += '<td><label for="' + backgroundPage.raidConfigs[ i ].room + '-sound-input">Sound Choice</label><div id="' + backgroundPage.raidConfigs[ i ].room + '-sound" class="ui selection dropdown"><input id="' + backgroundPage.raidConfigs[ i ].room + '-sound-input" type="hidden" name="formatting" value="none"><i class="dropdown icon"></i><div class="default text">Sound Choice</div><div class="menu">';
 		row += '<div class="item" data-value="none">None</div>';
 		row += '<div class="item" data-value="beeps">Beeps Appear</div>';
 		row += '<div class="item" data-value="lily-event-ringring">GBF - Lily (Event) - Ring Ring</div>';
@@ -91,9 +91,79 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		$( '.ui.checkbox' ).checkbox();
 	} );
 
-	document.getElementById( "save" ).addEventListener( "click", function ( evt ) {
+	var filterBox = document.getElementById("name-filter");
+	var minLevelBox = document.getElementById("level-min");
+	var maxLevelBox = document.getElementById("level-max");
+
+	function filter(event) {
+		var filter = filterBox.value.toLowerCase();
+		var min = parseInt(minLevelBox.value);
+		var max = parseInt(maxLevelBox.value);
+
+		var table = document.getElementById("settings-table");
+		var tr = table.getElementsByTagName("tr");
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				console.log(td.innerHTML);
+				var level = parseInt(td.innerHTML.match("Lvl\\s(\\d+)\\s.+")[1]);
+				if ((td.innerHTML.toLowerCase().indexOf(filter) > -1)
+					&& (min <= level)
+					&& (max >= level)) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none"
+				}
+			} 
+		}
+	};
+
+	filterBox.addEventListener("input", filter);
+	minLevelBox.addEventListener("input", filter);
+	maxLevelBox.addEventListener("input", filter);
+
+	var selectAllButton = document.getElementById("select-all");
+	selectAllButton.addEventListener("click", function(event) {
+		selectAllButton.disabled = true;
+
+		Array.from(document.getElementsByClassName("select-box")).map((x) => x.checked = true);
+
+		selectAllButton.disabled = false;
+	});
+
+	var selectNoneButton = document.getElementById("select-none");
+	selectNoneButton.addEventListener("click", function(event) {
+		selectNoneButton.disabled = true;
+
+		Array.from(document.getElementsByClassName("select-box")).map((x) => x.checked = false);
+
+		selectNoneButton.disabled = false;
+	});
+
+	var trackAllButton = document.getElementById("track-all");
+	trackAllButton.addEventListener("click", function(event) {
+		trackAllButton.disabled = true;
+
+		Array.from(document.getElementsByClassName("track-box")).map((x) => x.checked = true);
+
+		trackAllButton.disabled = false;
+	});
+
+	var trackNoneButton = document.getElementById("track-none");
+	trackNoneButton.addEventListener("click", function(event) {
+		trackNoneButton.disabled = true;
+
+		Array.from(document.getElementsByClassName("track-box")).map((x) => x.checked = false);
+
+		trackNoneButton.disabled = false;
+	});
+
+	var saveButtons = Array.from(document.getElementsByClassName("save"));
+	saveButtons.map((x) => x.addEventListener( "click", function ( evt ) {
 		console.log( "Saved button clicked." );
-		_gaq.push( [ '_trackEvent', "Save", 'clicked' ] );
+		saveButtons.map((x) => x.disabled = true);
+		saveButtons.map((x) => x.innerHTML = "Saving...");
 
 		var selectedRaids = [];
 		for ( var i = 0; i < backgroundPage.raidConfigs.length; i++ ) {
@@ -147,9 +217,13 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 			viramateID: viramateID
 		}, function () {
 			console.log( "Saved settings!" );
-			document.getElementById( "save" ).innerHTML = "Saved!";
+			saveButtons.map((x) => x.innerHTML = "Saved!");
+			setTimeout(function () {
+				saveButtons.map((x) => x.disabled = false);
+				saveButtons.map((x) => x.innerHTML = "Save");
+			}, 1000);
 		} );
-	} );
+	} ));
 } );
 
 document.getElementById( "viramate-id-input" ).addEventListener( 'keypress', function ( event ) {
@@ -161,15 +235,3 @@ document.getElementById( "viramate-id-input" ).addEventListener( 'keypress', fun
 	}
 } );
 
-var _gaq = _gaq || [];
-_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
-_gaq.push( [ '_trackPageview' ] );
-
-( function () {
-	var ga = document.createElement( 'script' );
-	ga.type = 'text/javascript';
-	ga.async = true;
-	ga.src = 'https://ssl.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName( 'script' )[ 0 ];
-	s.parentNode.insertBefore( ga, s );
-} )();

@@ -12,59 +12,59 @@
 			text-align: center;
 		}
 
-		#settings-table td {
+/*		#settings-table {
+			margin: 20px;
+		}*/
+
+/*		#settings-table td {
 			white-space: nowrap;
+		}
+*/
+
+		.table-div {
+			/*margin: 20px;*/
+			padding: 20px;
 		}
 
 		.message {
 			padding: 10px;
-			margin-bottom: 10px;
 		}
 
 		.selected-raid {
 			background-color: antiquewhite !important;
 		}
 
-		label {
-			margin-right: 5px;
-		}
-
-		#save {
-			margin-bottom: 5px;
-		}
-
-		.ui.checkbox .box:before,
-		.ui.checkbox label:before {
-			top: 7px;
-		}
-
-		.ui.checkbox .box:after,
-		.ui.checkbox label:after {
-			top: 7px;
-		}
-
-		#header-img {
-			width: 100%;
-			height: auto;
-			margin-bottom: 5px;
-		}
-
 		.ui.checkbox {
-			margin-bottom: 10px;
+			margin: 10px;
 		}
 
 		.ui.selection.dropdown {
-			margin-left: 5px;
+			margin-left: 10px;
+			margin-right: 10px;
 		}
 
 		#viramate-id {
-			margin-bottom: 5px;
+			margin: 10px;
 		}
+
+		.button-div {
+			margin: 10px;
+		}
+
+		.select-box {
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+
+		.track-box {
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+
 	</style>
 </head>
 
 <body>
-	<img id="header-img" src="/assets/GBFRaidersWeb.png">
 	<div class="message">Click on "Select" checkbox near each raid name that you want to receive new Tweets for. If a raid is selected, you can click on "Track" near that raid to receive desktop notifications for it.</div>
 	<div id="viramate-id" class="ui labeled input">
 		<div class="ui label">
@@ -85,14 +85,40 @@
 		<label>Close Extension After Button Click</label>
 		<input id="close-click-input" type="checkbox" tabindex="0" class="hidden">
 	</div>
-	<table id="settings-table" class="ui unstackable compact celled striped table">
-		<tbody id="container">
-			<tr>
-				<td>No raids loaded yet!</td>
-			</tr>
-		</tbody>
-	</table>
-	<button id="save" class="ui primary large button">Save</button>
+	<div>
+		<div class="ui labeled input">
+			<div class="ui label">Search Name:</div>
+			<input type="text" id="name-filter">
+		</div>
+		<div class="ui labeled input">
+			<div class="ui label">Min Level:</div>
+			<input type="number" min="0" max="200" id="level-min" value="0">
+			<div class="ui label">Max Level:</div>
+			<input type="number" min="0" max="200" id="level-max" value="200">
+		</div>
+
+	</div>
+	<div class="button-div">
+		<button id="select-all" class="ui primary button">Select All</button>
+		<button id="select-none" class="ui primary button">Select None</button>
+		<button id="track-all" class="ui primary button">Track All</button>
+		<button id="track-none" class="ui primary button">Track None</button>
+	</div>
+	<div class="button-div">
+		<button id="save" class="ui primary large button save">Save</button>
+	</div>
+	<div class="table-div">
+		<table id="settings-table" class="ui unstackable compact celled striped table">
+			<tbody id="container">
+				<tr>
+					<td>No raids loaded yet!</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="button-div">
+		<button id="save" class="ui primary large button save">Save</button>
+	</div>
 	<script src="/util/jquery-3.2.1.js"></script>
 	<script src="/util/semantic.js"></script>
 	<script src="/scripts/options.js"></script>

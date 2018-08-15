@@ -29,5 +29,8 @@
 		"storage",
 		"background",
 		"notifications"
+	],
+	"web_accessible_resources": [
+    	"data/*.json"
 	]
 }

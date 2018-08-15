@@ -1,6 +1,34 @@
 var backgroundPage = null;
 console.log( "Popup script started." );
 
+moment.updateLocale('en', {
+    relativeTime : {
+        future: "in %s",
+        past:   "%s ago",
+        s  : "%d seconds",
+        ss : "%d seconds",
+        m:  "%d minutes",
+        mm: "%d minutes",
+        h:  "an hour",
+        hh: "%d hours",
+        d:  "a day",
+        dd: "%d days",
+        M:  "a month",
+        MM: "%d months",
+        y:  "a year",
+        yy: "%d years"
+    }
+});
+
+setInterval( function () {
+	var raidTimes = document.getElementsByClassName("raidTime");
+	var i;
+		for (i = 0; i < raidTimes.length; i++) {
+			var timeTD = raidTimes[i];
+			timeTD.innerHTML = moment(timeTD.getAttribute("absolute_time")).fromNow();
+		}
+}, 1000 );
+
 chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
@@ -40,7 +68,10 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			var messageTD = document.createElement( "td" );
 			messageTD.innerHTML = backgroundPage.raids[ i ].message;
 			var timeTD = document.createElement( "td" );
-			timeTD.innerHTML = moment( backgroundPage.raids[ i ].time ).format( 'MMM DD HH:mm:ss' );
+			var raidTime = moment( backgroundPage.raids[ i ].time );
+			timeTD.setAttribute("class", "raidTime");
+			timeTD.setAttribute("absolute_time", raidTime.format())
+			timeTD.innerHTML = raidTime.fromNow();
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = backgroundPage.raids[ i ].id + '-btn';
@@ -96,7 +127,10 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			var messageTD = document.createElement( "td" );
 			messageTD.innerHTML = message.raid.message;
 			var timeTD = document.createElement( "td" );
-			timeTD.innerHTML = moment( message.raid.time ).format( 'MMM DD HH:mm:ss' );
+			var raidTime = moment( message.raid.time );
+			timeTD.setAttribute("class", "raidTime");
+			timeTD.setAttribute("absolute_time", raidTime.format())
+			timeTD.innerHTML = raidTime.fromNow();
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = message.raid.id + '-btn';
@@ -260,16 +294,3 @@ function JoinButtonClicked( id ) {
 		console.log( "Error sending message to Viramate: " + error );
 	}
 }
-
-var _gaq = _gaq || [];
-_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
-_gaq.push( [ '_trackPageview' ] );
-
-( function () {
-	var ga = document.createElement( 'script' );
-	ga.type = 'text/javascript';
-	ga.async = true;
-	ga.src = 'https://ssl.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName( 'script' )[ 0 ];
-	s.parentNode.insertBefore( ga, s );
-} )();
