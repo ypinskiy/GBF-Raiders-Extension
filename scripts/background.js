@@ -10,7 +10,6 @@ var showSettings = {
 	id: false
 };
 var notifications = [];
-var unseenRaids = 0;
 var raidLimit = 20;
 var wasDown = false;
 var muted = false;
@@ -31,25 +30,25 @@ var titanfallDroppingNowSoundNotif = new Audio( '/assets/sounds/Titanfall_Droppi
 console.log( "Background script started." );
 
 var localeSettings = {
-    relativeTime : {
-        future: "in %s",
-        past:   "%s ago",
-        s  : "%d seconds",
-        ss : "%d seconds",
-        m:  "%d minutes",
-        mm: "%d minutes",
-        h:  "an hour",
-        hh: "%d hours",
-        d:  "a day",
-        dd: "%d days",
-        M:  "a month",
-        MM: "%d months",
-        y:  "a year",
-        yy: "%d years"
-    }
+	relativeTime: {
+		future: "in %s",
+		past: "%s ago",
+		s: "%d seconds",
+		ss: "%d seconds",
+		m: "%d minutes",
+		mm: "%d minutes",
+		h: "an hour",
+		hh: "%d hours",
+		d: "a day",
+		dd: "%d days",
+		M: "a month",
+		MM: "%d months",
+		y: "a year",
+		yy: "%d years"
+	}
 }
 
-moment.updateLocale('en', localeSettings);
+moment.updateLocale( 'en', localeSettings );
 
 setInterval( function () {
 	if ( socket !== null && socket.connected ) {
@@ -162,10 +161,11 @@ function GetRaidFromNotification( notificationId ) {
 }
 
 function RefreshRaidConfigs() {
-	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {		console.log( "Got response from server. Parsing to JSON..." );
+	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {
+		console.log( "Got response from server. Parsing to JSON..." );
 		console.log( "Got response from server. Parsing to JSON..." );
 		return response.json();
-	}).then(function(tempRaidConfigs) {
+	} ).then( function ( tempRaidConfigs ) {
 		raidConfigs = tempRaidConfigs;
 		console.log( "Parsed server response. Amount of raids: " + raidConfigs.length );
 	} );
@@ -222,7 +222,6 @@ socket.on( 'tweet', function ( data ) {
 	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id );
 	if ( !DoesRaidExist( data.id ) && !stopped ) {
 		console.log( "Raid with this ID does not exist. Adding to raids array..." );
-		unseenRaids++;
 		raids.unshift( data );
 		chrome.runtime.sendMessage( {
 			raid: data
@@ -285,18 +284,25 @@ socket.on( 'tweet', function ( data ) {
 			console.log( "Too many raids. Removing oldest one..." );
 			raids.splice( raids.length - 1, 1 );
 		}
-		console.log( "Unseen Raids: " + unseenRaids );
-		if ( unseenRaids > 0 && unseenRaids <= raidLimit ) {
-			console.log( "Updating unseen raids badge..." );
-			chrome.browserAction.setBadgeBackgroundColor( {
-				color: [ 255, 0, 0, 255 ]
-			} );
-			chrome.browserAction.setBadgeText( {
-				text: unseenRaids.toString()
-			} );
-		}
+		console.log( "Updating raids badge..." );
+		chrome.browserAction.setBadgeBackgroundColor( {
+			color: [ 255, 0, 0, 255 ]
+		} );
+		chrome.browserAction.setBadgeText( {
+			text: raids.length.toString()
+		} );
 	}
 } );
+
+setInterval(function() {
+	console.log( "Updating raids badge..." );
+	chrome.browserAction.setBadgeBackgroundColor( {
+		color: [ 255, 0, 0, 255 ]
+	} );
+	chrome.browserAction.setBadgeText( {
+		text: raids.length.toString()
+	} );
+}, 60000)
 
 chrome.storage.onChanged.addListener( function ( changes, namespace ) {
 	console.log( "Chrome storage changed." );
@@ -406,7 +412,7 @@ document.body.appendChild( raidIDDiv );
 var _gaq = _gaq || [];
 _gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
 _gaq.push( [ '_trackPageview' ] );
- ( function () {
+( function () {
 	var ga = document.createElement( 'script' );
 	ga.type = 'text/javascript';
 	ga.async = true;

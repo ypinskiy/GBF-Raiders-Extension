@@ -1,55 +1,55 @@
 var backgroundPage = null;
 console.log( "Popup script started." );
 
-moment.updateLocale('en', {
-    relativeTime : {
-        future: "in %s",
-        past:   "%s ago",
-        s  : "%d seconds",
-        ss : "%d seconds",
-        m:  "%d minutes",
-        mm: "%d minutes",
-        h:  "an hour",
-        hh: "%d hours",
-        d:  "a day",
-        dd: "%d days",
-        M:  "a month",
-        MM: "%d months",
-        y:  "a year",
-        yy: "%d years"
-    }
-});
+moment.updateLocale( 'en', {
+	relativeTime: {
+		future: "in %s",
+		past: "%s ago",
+		s: "%d seconds",
+		ss: "%d seconds",
+		m: "%d minutes",
+		mm: "%d minutes",
+		h: "an hour",
+		hh: "%d hours",
+		d: "a day",
+		dd: "%d days",
+		M: "a month",
+		MM: "%d months",
+		y: "a year",
+		yy: "%d years"
+	}
+} );
 
 setInterval( function () {
-	var raidTimes = document.getElementsByClassName("raidTime");
+	var raidTimes = document.getElementsByClassName( "raidTime" );
 	var i;
-		for (i = 0; i < raidTimes.length; i++) {
-			var timeTD = raidTimes[i];
-			timeTD.innerHTML = moment(timeTD.getAttribute("absolute_time")).fromNow();
-		}
+	for ( i = 0; i < raidTimes.length; i++ ) {
+		var timeTD = raidTimes[ i ];
+		timeTD.innerHTML = moment( timeTD.getAttribute( "absolute_time" ) ).fromNow();
+	}
 }, 1000 );
 
 chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
-	moment.updateLocale('en', backgroundPage.localeSettings);
+	moment.updateLocale( 'en', backgroundPage.localeSettings );
 	backgroundPage.RefreshRaidConfigs();
 
 	document.getElementById( "mute-btn" ).addEventListener( 'click', function ( event ) {
 		backgroundPage.muted = !backgroundPage.muted;
-		document.getElementById( "mute-btn" ).classList.toggle("primary");
-		document.getElementById( "mute-btn" ).classList.toggle("negative");
+		document.getElementById( "mute-btn" ).classList.toggle( "primary" );
+		document.getElementById( "mute-btn" ).classList.toggle( "negative" );
 		document.getElementById( "mute-btn" ).innerHTML = backgroundPage.muted ? 'Unmute<i class="unmute icon"></i>' : 'Mute<i class="mute icon"></i>';
 	} );
 
 	document.getElementById( "stop-btn" ).addEventListener( 'click', function ( event ) {
 		backgroundPage.stopped = !backgroundPage.stopped;
-		document.getElementById( "stop-btn" ).classList.toggle("primary");
-		document.getElementById( "stop-btn" ).classList.toggle("negative");
+		document.getElementById( "stop-btn" ).classList.toggle( "primary" );
+		document.getElementById( "stop-btn" ).classList.toggle( "negative" );
 		document.getElementById( "stop-btn" ).innerHTML = backgroundPage.stopped ? 'Start<i class="play icon"></i>' : 'Stop<i class="stop icon"></i>';
 	} );
 
-	if (!backgroundPage.showSettings.id) {
+	if ( !backgroundPage.showSettings.id ) {
 		document.getElementById( "header-container" ).removeChild( document.getElementById( "id-header" ) );
 	}
 	if ( !backgroundPage.showSettings.message ) {
@@ -73,8 +73,8 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			messageTD.innerHTML = backgroundPage.raids[ i ].message;
 			var timeTD = document.createElement( "td" );
 			var raidTime = moment( backgroundPage.raids[ i ].time );
-			timeTD.setAttribute("class", "raidTime");
-			timeTD.setAttribute("absolute_time", raidTime.format())
+			timeTD.setAttribute( "class", "raidTime" );
+			timeTD.setAttribute( "absolute_time", raidTime.format() )
 			timeTD.innerHTML = raidTime.fromNow();
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
@@ -92,22 +92,22 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			} else if ( backgroundPage.raids[ i ].status === "error" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Error";
-			} else if (backgroundPage.raids[i].status === "no AP") {
+			} else if ( backgroundPage.raids[ i ].status === "no AP" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Insufficient AP";
-			} else if (backgroundPage.raids[i].status === "over") {
+			} else if ( backgroundPage.raids[ i ].status === "over" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Battle ended";
-			} else if (backgroundPage.raids[i].status === "battle not found") {
+			} else if ( backgroundPage.raids[ i ].status === "battle not found" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Raid not found";
-			}  else if (backgroundPage.raids[i].status === "granblue not found") {
+			} else if ( backgroundPage.raids[ i ].status === "granblue not found" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "No Granblue page";
-			}  else if (backgroundPage.raids[i].status === "api disabled") {
+			} else if ( backgroundPage.raids[ i ].status === "api disabled" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Viramate API disabled";
-			}  else if (backgroundPage.raids[i].status === "battle is full") {
+			} else if ( backgroundPage.raids[ i ].status === "battle is full" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Raid full";
 			}
@@ -116,7 +116,7 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			} );
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
-			if (backgroundPage.showSettings.id) {
+			if ( backgroundPage.showSettings.id ) {
 				raidRow.appendChild( idTD );
 			}
 			if ( backgroundPage.showSettings.message ) {
@@ -130,7 +130,6 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 		}
 	}
 
-	backgroundPage.unseenRaids = 0;
 	chrome.browserAction.setBadgeText( {
 		text: ""
 	} );
@@ -152,8 +151,8 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			messageTD.innerHTML = message.raid.message;
 			var timeTD = document.createElement( "td" );
 			var raidTime = moment( message.raid.time );
-			timeTD.setAttribute("class", "raidTime");
-			timeTD.setAttribute("absolute_time", raidTime.format())
+			timeTD.setAttribute( "class", "raidTime" );
+			timeTD.setAttribute( "absolute_time", raidTime.format() )
 			timeTD.innerHTML = raidTime.fromNow();
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
@@ -165,7 +164,7 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			} );
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
-			if (backgroundPage.showSettings.id) {
+			if ( backgroundPage.showSettings.id ) {
 				raidRow.appendChild( idTD );
 			}
 			if ( backgroundPage.showSettings.message ) {
@@ -182,7 +181,6 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 				document.getElementById( "raid-table-body" ).removeChild( document.getElementById( "raid-table-body" ).lastChild );
 			}
 
-			backgroundPage.unseenRaids = 0;
 			chrome.browserAction.setBadgeText( {
 				text: ""
 			} );
@@ -324,7 +322,7 @@ function JoinButtonClicked( id ) {
 var _gaq = _gaq || [];
 _gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
 _gaq.push( [ '_trackPageview' ] );
- ( function () {
+( function () {
 	var ga = document.createElement( 'script' );
 	ga.type = 'text/javascript';
 	ga.async = true;
