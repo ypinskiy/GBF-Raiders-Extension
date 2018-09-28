@@ -6,7 +6,8 @@ var loudRaids = [];
 var showSettings = {
 	message: false,
 	time: false,
-	close: false
+	close: false,
+	id: false
 };
 var notifications = [];
 var unseenRaids = 0;
@@ -29,7 +30,7 @@ var titanfallDroppingNowSoundNotif = new Audio( '/assets/sounds/Titanfall_Droppi
 
 console.log( "Background script started." );
 
-moment.updateLocale('en', {
+var localeSettings = {
     relativeTime : {
         future: "in %s",
         past:   "%s ago",
@@ -46,7 +47,9 @@ moment.updateLocale('en', {
         y:  "a year",
         yy: "%d years"
     }
-});
+}
+
+moment.updateLocale('en', localeSettings);
 
 setInterval( function () {
 	if ( socket !== null && socket.connected ) {
@@ -159,9 +162,7 @@ function GetRaidFromNotification( notificationId ) {
 }
 
 function RefreshRaidConfigs() {
-	var raidConfigPath = chrome.runtime.getURL("data/raid_configs.json");
-	fetch(raidConfigPath).then(function(response) {
-		console.log( "Got response from server. Parsing to JSON..." );
+	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {		console.log( "Got response from server. Parsing to JSON..." );
 		return response.json();
 	}).then(function(tempRaidConfigs) {
 		raidConfigs = tempRaidConfigs;
@@ -236,27 +237,27 @@ socket.on( 'tweet', function ( data ) {
 					} else {
 						title = raidConfig.english;
 					}
-					// try {
-					// 	fetch( 'https://www.gbfraiders.com' + raidConfig.image ).then( function ( response ) {
-					// 		return response.blob();
-					// 	} ).then( function ( myBlob ) {
-					// 		var objectURL = URL.createObjectURL( myBlob );
-					// 		chrome.notifications.create( {
-					// 			type: "basic",
-					// 			iconUrl: objectURL,
-					// 			title: title,
-					// 			message: 'ID:            ' + data.id + '\nTime:        ' + moment( data.time ).format( 'MMM DD HH:mm:ss' ) + '\nUser:        ' + data.user + '\nMessage: ' + data.message,
-					// 			isClickable: true
-					// 		}, function ( notificationId ) {
-					// 			notifications.push( {
-					// 				raid: data,
-					// 				notification: notificationId
-					// 			} );
-					// 		} );
-					// 	} );
-					// } catch ( error ) {
-					// 	console.log( "Error getting raid image or creating notification: " + error );
-					// }
+					try {
+						fetch( 'https://www.gbfraiders.com' + raidConfig.image ).then( function ( response ) {
+							return response.blob();
+						} ).then( function ( myBlob ) {
+							var objectURL = URL.createObjectURL( myBlob );
+							chrome.notifications.create( {
+								type: "basic",
+								iconUrl: objectURL,
+								title: title,
+								message: 'ID:            ' + data.id + '\nTime:        ' + moment( data.time ).format( 'MMM DD HH:mm:ss' ) + '\nUser:        ' + data.user + '\nMessage: ' + data.message,
+								isClickable: true
+							}, function ( notificationId ) {
+								notifications.push( {
+									raid: data,
+									notification: notificationId
+								} );
+							} );
+						} );
+					} catch ( error ) {
+						console.log( "Error getting raid image or creating notification: " + error );
+					}
 				}
 				console.log( "Successfully sent raid notification." );
 			} catch ( error ) {
@@ -374,9 +375,9 @@ function onMessage( evt ) {
 		return;
 	} else {
 		if ( evt.data.result === "refill required" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "not enough AP";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "no AP";
 		} else if ( evt.data.result === "popup: This raid battle has already ended." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "battle is over";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "over";
 		} else if ( evt.data.result === "popup: The number that you entered doesn't match any battle." ) {
 			raids[ FindRaidIndex( evt.data.id ) ].status = "battle not found";
 		} else if ( evt.data.result.error === "No granblue tab found" ) {

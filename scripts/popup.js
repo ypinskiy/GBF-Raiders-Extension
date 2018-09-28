@@ -32,6 +32,7 @@ setInterval( function () {
 chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 	backgroundPage = tempBackgroundPage;
 	console.log( "Got background page. Amount of cached raids: " + backgroundPage.raids.length );
+	moment.updateLocale('en', backgroundPage.localeSettings);
 	backgroundPage.RefreshRaidConfigs();
 
 	document.getElementById( "mute-btn" ).addEventListener( 'click', function ( event ) {
@@ -48,6 +49,9 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 		document.getElementById( "stop-btn" ).innerHTML = backgroundPage.stopped ? 'Start<i class="play icon"></i>' : 'Stop<i class="stop icon"></i>';
 	} );
 
+	if (!backgroundPage.showSettings.id) {
+		document.getElementById( "header-container" ).removeChild( document.getElementById( "id-header" ) );
+	}
 	if ( !backgroundPage.showSettings.message ) {
 		document.getElementById( "header-container" ).removeChild( document.getElementById( "message-header" ) );
 	}
@@ -88,13 +92,33 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			} else if ( backgroundPage.raids[ i ].status === "error" ) {
 				button.classList.add( "negative" );
 				button.innerHTML = "Error";
+			} else if (backgroundPage.raids[i].status === "no AP") {
+				button.classList.add( "negative" );
+				button.innerHTML = "Insufficient AP";
+			} else if (backgroundPage.raids[i].status === "over") {
+				button.classList.add( "negative" );
+				button.innerHTML = "Battle ended";
+			} else if (backgroundPage.raids[i].status === "battle not found") {
+				button.classList.add( "negative" );
+				button.innerHTML = "Raid not found";
+			}  else if (backgroundPage.raids[i].status === "granblue not found") {
+				button.classList.add( "negative" );
+				button.innerHTML = "No Granblue page";
+			}  else if (backgroundPage.raids[i].status === "api disabled") {
+				button.classList.add( "negative" );
+				button.innerHTML = "Viramate API disabled";
+			}  else if (backgroundPage.raids[i].status === "battle is full") {
+				button.classList.add( "negative" );
+				button.innerHTML = "Raid full";
 			}
 			button.addEventListener( 'click', function ( evt ) {
 				JoinButtonClicked( evt.target.id.substr( 0, 8 ) );
 			} );
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
-			raidRow.appendChild( idTD );
+			if (backgroundPage.showSettings.id) {
+				raidRow.appendChild( idTD );
+			}
 			if ( backgroundPage.showSettings.message ) {
 				raidRow.appendChild( messageTD );
 			}
@@ -141,7 +165,9 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			} );
 			buttonTD.appendChild( button );
 			raidRow.appendChild( roomTD );
-			raidRow.appendChild( idTD );
+			if (backgroundPage.showSettings.id) {
+				raidRow.appendChild( idTD );
+			}
 			if ( backgroundPage.showSettings.message ) {
 				raidRow.appendChild( messageTD );
 			}
@@ -294,3 +320,15 @@ function JoinButtonClicked( id ) {
 		console.log( "Error sending message to Viramate: " + error );
 	}
 }
+
+var _gaq = _gaq || [];
+_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
+_gaq.push( [ '_trackPageview' ] );
+ ( function () {
+	var ga = document.createElement( 'script' );
+	ga.type = 'text/javascript';
+	ga.async = true;
+	ga.src = 'https://ssl.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName( 'script' )[ 0 ];
+	s.parentNode.insertBefore( ga, s );
+} )();

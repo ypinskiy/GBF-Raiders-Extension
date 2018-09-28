@@ -75,9 +75,13 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		showSettings: {
 			message: false,
 			time: false,
-			close: false
+			close: false,
+			if: false
 		}
 	}, function ( items ) {
+		if (items.showSettings.id) {
+			document.getElementById("show-id-input").checked = true;
+		}
 		if ( items.showSettings.message ) {
 			document.getElementById( "show-message-input" ).checked = true;
 		}
@@ -195,8 +199,12 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		var showSettings = {
 			message: false,
 			time: false,
-			close: false
+			close: false,
+			id: false
 		};
+		if (document.getElementById( "show-id-input" ).checked) {
+			showSettings.id = true;
+		}
 		if ( document.getElementById( "show-message-input" ).checked ) {
 			showSettings.message = true;
 		}
@@ -235,3 +243,15 @@ document.getElementById( "viramate-id-input" ).addEventListener( 'keypress', fun
 	}
 } );
 
+
+var _gaq = _gaq || [];
+_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
+_gaq.push( [ '_trackPageview' ] );
+ ( function () {
+	var ga = document.createElement( 'script' );
+	ga.type = 'text/javascript';
+	ga.async = true;
+	ga.src = 'https://ssl.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName( 'script' )[ 0 ];
+	s.parentNode.insertBefore( ga, s );
+} )();
