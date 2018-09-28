@@ -163,6 +163,7 @@ function GetRaidFromNotification( notificationId ) {
 
 function RefreshRaidConfigs() {
 	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {		console.log( "Got response from server. Parsing to JSON..." );
+		console.log( "Got response from server. Parsing to JSON..." );
 		return response.json();
 	}).then(function(tempRaidConfigs) {
 		raidConfigs = tempRaidConfigs;
@@ -402,3 +403,14 @@ var raidIDDiv = document.createElement( 'div' );
 raidIDDiv.id = "id-container";
 document.body.appendChild( raidIDDiv );
 
+var _gaq = _gaq || [];
+_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
+_gaq.push( [ '_trackPageview' ] );
+ ( function () {
+	var ga = document.createElement( 'script' );
+	ga.type = 'text/javascript';
+	ga.async = true;
+	ga.src = 'https://ssl.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName( 'script' )[ 0 ];
+	s.parentNode.insertBefore( ga, s );
+} )();
