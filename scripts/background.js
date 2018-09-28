@@ -6,7 +6,8 @@ var loudRaids = [];
 var showSettings = {
 	message: false,
 	time: false,
-	close: false
+	close: false,
+	id: false
 };
 var notifications = [];
 var unseenRaids = 0;
@@ -28,6 +29,27 @@ var andiraOniichanSoundNotif = new Audio( '/assets/sounds/Andira_Oniichan.mp3' )
 var titanfallDroppingNowSoundNotif = new Audio( '/assets/sounds/Titanfall_DroppingNow.mp3' );
 
 console.log( "Background script started." );
+
+var localeSettings = {
+    relativeTime : {
+        future: "in %s",
+        past:   "%s ago",
+        s  : "%d seconds",
+        ss : "%d seconds",
+        m:  "%d minutes",
+        mm: "%d minutes",
+        h:  "an hour",
+        hh: "%d hours",
+        d:  "a day",
+        dd: "%d days",
+        M:  "a month",
+        MM: "%d months",
+        y:  "a year",
+        yy: "%d years"
+    }
+}
+
+moment.updateLocale('en', localeSettings);
 
 setInterval( function () {
 	if ( socket !== null && socket.connected ) {
@@ -140,10 +162,10 @@ function GetRaidFromNotification( notificationId ) {
 }
 
 function RefreshRaidConfigs() {
-	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {
+	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {		console.log( "Got response from server. Parsing to JSON..." );
 		console.log( "Got response from server. Parsing to JSON..." );
 		return response.json();
-	} ).then( function ( tempRaidConfigs ) {
+	}).then(function(tempRaidConfigs) {
 		raidConfigs = tempRaidConfigs;
 		console.log( "Parsed server response. Amount of raids: " + raidConfigs.length );
 	} );
@@ -354,17 +376,17 @@ function onMessage( evt ) {
 		return;
 	} else {
 		if ( evt.data.result === "refill required" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "no AP";
 		} else if ( evt.data.result === "popup: This raid battle has already ended." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "over";
 		} else if ( evt.data.result === "popup: The number that you entered doesn't match any battle." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "battle not found";
 		} else if ( evt.data.result.error === "No granblue tab found" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "granblue not found";
 		} else if ( evt.data.result.error === "api disabled" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "viramate API disabled";
 		} else if ( evt.data.result === "popup: This raid battle is full. You can't participate." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "error";
+			raids[ FindRaidIndex( evt.data.id ) ].status = "battle is full";
 		} else if ( evt.data.result === "already in this raid" ) {
 			raids[ FindRaidIndex( evt.data.id ) ].status = "joined";
 		} else if ( evt.data.result === "ok" ) {
@@ -384,8 +406,7 @@ document.body.appendChild( raidIDDiv );
 var _gaq = _gaq || [];
 _gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
 _gaq.push( [ '_trackPageview' ] );
-
-( function () {
+ ( function () {
 	var ga = document.createElement( 'script' );
 	ga.type = 'text/javascript';
 	ga.async = true;
