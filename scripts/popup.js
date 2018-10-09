@@ -129,10 +129,6 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			document.getElementById( "raid-table-body" ).appendChild( raidRow );
 		}
 	}
-
-	chrome.browserAction.setBadgeText( {
-		text: ""
-	} );
 } );
 
 chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse ) {

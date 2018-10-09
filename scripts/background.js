@@ -10,7 +10,7 @@ var showSettings = {
 	id: false
 };
 var notifications = [];
-var raidLimit = 20;
+var raidLimit = 30;
 var wasDown = false;
 var muted = false;
 var stopped = false;
@@ -163,7 +163,6 @@ function GetRaidFromNotification( notificationId ) {
 function RefreshRaidConfigs() {
 	fetch( 'https://www.gbfraiders.com/getraids', { cache: 'no-store' } ).then( function ( response ) {
 		console.log( "Got response from server. Parsing to JSON..." );
-		console.log( "Got response from server. Parsing to JSON..." );
 		return response.json();
 	} ).then( function ( tempRaidConfigs ) {
 		raidConfigs = tempRaidConfigs;
@@ -219,7 +218,7 @@ chrome.storage.sync.get( {
 } );
 
 socket.on( 'tweet', function ( data ) {
-	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id );
+	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id, data );
 	if ( !DoesRaidExist( data.id ) && !stopped ) {
 		console.log( "Raid with this ID does not exist. Adding to raids array..." );
 		raids.unshift( data );
@@ -294,15 +293,22 @@ socket.on( 'tweet', function ( data ) {
 	}
 } );
 
-setInterval(function() {
+setInterval( function () {
 	console.log( "Updating raids badge..." );
+	for ( var i = raids.length - 1; i > 0; i-- ) {
+		raids[ i ].timer++;
+		if ( raids[ i ].timer > 4 ) {
+			console.log( "Raid is too old. Removing oldest one..." );
+			raids.splice( i, 1 );
+		}
+	}
 	chrome.browserAction.setBadgeBackgroundColor( {
 		color: [ 255, 0, 0, 255 ]
 	} );
 	chrome.browserAction.setBadgeText( {
 		text: raids.length.toString()
 	} );
-}, 60000)
+}, 60000 )
 
 chrome.storage.onChanged.addListener( function ( changes, namespace ) {
 	console.log( "Chrome storage changed." );
