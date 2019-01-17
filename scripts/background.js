@@ -1,4 +1,4 @@
-var socket = io.connect( 'https://www.gbfraiders.com/' );
+var socket = io.connect( 'https://www.gbfraiders.com:8080/' );
 var raids = [];
 var raidConfigs = [];
 var trackedRaids = [];
