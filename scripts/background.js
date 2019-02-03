@@ -1,4 +1,4 @@
-var socket = io.connect( 'https://www.gbfraiders.com:8080/' );
+var socket = io.connect( 'https://www.gbfraiders.com:80/' );
 var raids = [];
 var raidConfigs = [];
 var trackedRaids = [];
@@ -381,10 +381,24 @@ chrome.notifications.onClosed.addListener( function ( notificationId, byUser ) {
 
 window.addEventListener( "message", onMessage, false );
 
+function CompareRaidEnemyHealths( a, b ) {
+	return b.hpMax - a.hpMax;
+}
+
 function onMessage( evt ) {
-	console.log( "Got message from Viramate:" );
-	console.dir( evt.data );
-	if ( evt.data.type !== "result" ) {
+	console.log( "Got message from Viramate:", data );
+	if ( evt.data.type === "apiEvent:actionResult" ) {
+		if ( evt.data.combatState.raidCode ) {
+			console.log( "Raid doesn't exists on page, parsing and sending raid health to store..." );
+			var mainEnemies = evt.data.combatState.enemies.filter( e => e.hasModeGauge == 1 ).sort( CompareRaidEnemyHealths );
+			socket.emit( 'raid-health-store', {
+				id: evt.data.combatState.raidCode,
+				currentHP: mainEnemies[ 0 ].hp,
+				maxHP: mainEnemies[ 0 ].hpMax,
+				percent: ( ( mainEnemies[ 0 ].hp / mainEnemies[ 0 ].hpMax ) * 100 ).toFixed( 2 )
+			} );
+		}
+	} else if ( evt.data.type !== "result" ) {
 		return;
 	} else {
 		if ( evt.data.result === "refill required" ) {
