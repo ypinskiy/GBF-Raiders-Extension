@@ -1,4 +1,4 @@
-var socket = io.connect( 'https://www.gbfraiders.com:80/' );
+var socket = io.connect( 'https://www.gbfraiders.com:8080/' );
 var raids = [];
 var raidConfigs = [];
 var trackedRaids = [];
@@ -14,13 +14,6 @@ var raidLimit = 30;
 var wasDown = false;
 var muted = false;
 var stopped = false;
-var viramateID = "fgpokpknehglcioijejfeebigdnbnokj";
-var viramateScript = document.createElement( 'iframe' );
-viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
-viramateScript.id = "viramate-api";
-viramateScript.width = 1;
-viramateScript.height = 1;
-document.body.appendChild( viramateScript );
 
 var beepsSoundNotif = new Audio( '/assets/sounds/Beeps_Appear.wav' );
 var lilyRingRingSoundNotif = new Audio( '/assets/sounds/Lily_Event_RingRing.mp3' );
@@ -82,19 +75,6 @@ function FindRaid( id ) {
 		}
 	}
 	return result;
-}
-
-function JoinRaid( id ) {
-	try {
-		document.getElementById( "viramate-api" ).contentWindow.postMessage( {
-			type: "tryJoinRaid",
-			id: id,
-			raidCode: id
-		}, "*" );
-		console.log( "Sent message to Viramate successfully." );
-	} catch ( error ) {
-		console.log( "Error sending message to Viramate: " + error );
-	}
 }
 
 function FindRaidConfig( room ) {
@@ -207,14 +187,6 @@ chrome.storage.sync.get( {
 }, function ( items ) {
 	console.log( "Getting initial show settings from storage..." );
 	showSettings = items.showSettings;
-} );
-
-chrome.storage.sync.get( {
-	viramateID: "fgpokpknehglcioijejfeebigdnbnokj"
-}, function ( items ) {
-	console.log( "Getting initial viramate ID from storage..." );
-	viramateID = items.viramateID;
-	viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
 } );
 
 socket.on( 'tweet', function ( data ) {
@@ -339,10 +311,6 @@ chrome.storage.onChanged.addListener( function ( changes, namespace ) {
 		} else if ( key === "showSettings" ) {
 			console.log( "Updating show settings..." );
 			showSettings = change.newValue;
-		} else if ( key === "viramateID" ) {
-			console.log( "Updating viramate ID..." );
-			viramateID = change.newValue;
-			viramateScript.src = "chrome-extension://" + viramateID + "/content/api.html";
 		}
 	}
 	raids = [];
@@ -365,8 +333,6 @@ chrome.notifications.onClicked.addListener( function ( notificationId ) {
 			selection.removeAllRanges();
 			console.log( "Copied raid ID successfully." );
 		}
-		JoinRaid( raidID );
-		raids[ FindRaidIndex( raidID ) ].status = "clicked";
 	}
 } );
 
@@ -379,64 +345,6 @@ chrome.notifications.onClosed.addListener( function ( notificationId, byUser ) {
 	}
 } );
 
-window.addEventListener( "message", onMessage, false );
-
-function CompareRaidEnemyHealths( a, b ) {
-	return b.hpMax - a.hpMax;
-}
-
-function onMessage( evt ) {
-	console.log( "Got message from Viramate:", data );
-	if ( evt.data.type === "apiEvent:actionResult" ) {
-		if ( evt.data.combatState.raidCode ) {
-			console.log( "Raid doesn't exists on page, parsing and sending raid health to store..." );
-			var mainEnemies = evt.data.combatState.enemies.filter( e => e.hasModeGauge == 1 ).sort( CompareRaidEnemyHealths );
-			socket.emit( 'raid-health-store', {
-				id: evt.data.combatState.raidCode,
-				currentHP: mainEnemies[ 0 ].hp,
-				maxHP: mainEnemies[ 0 ].hpMax,
-				percent: ( ( mainEnemies[ 0 ].hp / mainEnemies[ 0 ].hpMax ) * 100 ).toFixed( 2 )
-			} );
-		}
-	} else if ( evt.data.type !== "result" ) {
-		return;
-	} else {
-		if ( evt.data.result === "refill required" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "no AP";
-		} else if ( evt.data.result === "popup: This raid battle has already ended." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "over";
-		} else if ( evt.data.result === "popup: The number that you entered doesn't match any battle." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "battle not found";
-		} else if ( evt.data.result.error === "No granblue tab found" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "granblue not found";
-		} else if ( evt.data.result.error === "api disabled" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "viramate API disabled";
-		} else if ( evt.data.result === "popup: This raid battle is full. You can't participate." ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "battle is full";
-		} else if ( evt.data.result === "already in this raid" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "joined";
-		} else if ( evt.data.result === "ok" ) {
-			raids[ FindRaidIndex( evt.data.id ) ].status = "joined";
-		}
-		chrome.runtime.sendMessage( {
-			viramate: evt.data.result,
-			id: evt.data.id
-		} );
-	}
-}
-
 var raidIDDiv = document.createElement( 'div' );
 raidIDDiv.id = "id-container";
 document.body.appendChild( raidIDDiv );
-
-var _gaq = _gaq || [];
-_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
-_gaq.push( [ '_trackPageview' ] );
-( function () {
-	var ga = document.createElement( 'script' );
-	ga.type = 'text/javascript';
-	ga.async = true;
-	ga.src = 'https://ssl.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName( 'script' )[ 0 ];
-	s.parentNode.insertBefore( ga, s );
-} )();

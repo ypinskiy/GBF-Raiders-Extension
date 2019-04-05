@@ -2,7 +2,7 @@ console.log( "Options script started. Getting list of raids from background scri
 
 chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	backgroundPage.RefreshRaidConfigs();
-	
+
 	backgroundPage.raidConfigs.sort( function ( a, b ) {
 		if ( a.english < b.english ) {
 			return -1;
@@ -65,13 +65,6 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	} );
 
 	chrome.storage.sync.get( {
-		viramateID: "fgpokpknehglcioijejfeebigdnbnokj"
-	}, function ( items ) {
-		console.log( "Getting initial viramate ID from storage..." );
-		document.getElementById( "viramate-id-input" ).value = items.viramateID;
-	} );
-
-	chrome.storage.sync.get( {
 		showSettings: {
 			message: false,
 			time: false,
@@ -79,8 +72,8 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 			if: false
 		}
 	}, function ( items ) {
-		if (items.showSettings.id) {
-			document.getElementById("show-id-input").checked = true;
+		if ( items.showSettings.id ) {
+			document.getElementById( "show-id-input" ).checked = true;
 		}
 		if ( items.showSettings.message ) {
 			document.getElementById( "show-message-input" ).checked = true;
@@ -95,80 +88,80 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		$( '.ui.checkbox' ).checkbox();
 	} );
 
-	var filterBox = document.getElementById("name-filter");
-	var minLevelBox = document.getElementById("level-min");
-	var maxLevelBox = document.getElementById("level-max");
+	var filterBox = document.getElementById( "name-filter" );
+	var minLevelBox = document.getElementById( "level-min" );
+	var maxLevelBox = document.getElementById( "level-max" );
 
-	function filter(event) {
+	function filter( event ) {
 		var filter = filterBox.value.toLowerCase();
-		var min = parseInt(minLevelBox.value);
-		var max = parseInt(maxLevelBox.value);
+		var min = parseInt( minLevelBox.value );
+		var max = parseInt( maxLevelBox.value );
 
-		var table = document.getElementById("settings-table");
-		var tr = table.getElementsByTagName("tr");
+		var table = document.getElementById( "settings-table" );
+		var tr = table.getElementsByTagName( "tr" );
 
-		for (i = 0; i < tr.length; i++) {
-			td = tr[i].getElementsByTagName("td")[0];
-			if (td) {
-				console.log(td.innerHTML);
-				var level = parseInt(td.innerHTML.match("Lvl\\s(\\d+)\\s.+")[1]);
-				if ((td.innerHTML.toLowerCase().indexOf(filter) > -1)
-					&& (min <= level)
-					&& (max >= level)) {
-					tr[i].style.display = "";
+		for ( i = 0; i < tr.length; i++ ) {
+			td = tr[ i ].getElementsByTagName( "td" )[ 0 ];
+			if ( td ) {
+				console.log( td.innerHTML );
+				var level = parseInt( td.innerHTML.match( "Lvl\\s(\\d+)\\s.+" )[ 1 ] );
+				if ( ( td.innerHTML.toLowerCase().indexOf( filter ) > -1 ) &&
+					( min <= level ) &&
+					( max >= level ) ) {
+					tr[ i ].style.display = "";
 				} else {
-					tr[i].style.display = "none"
+					tr[ i ].style.display = "none"
 				}
-			} 
+			}
 		}
 	};
 
-	filterBox.addEventListener("input", filter);
-	minLevelBox.addEventListener("input", filter);
-	maxLevelBox.addEventListener("input", filter);
+	filterBox.addEventListener( "input", filter );
+	minLevelBox.addEventListener( "input", filter );
+	maxLevelBox.addEventListener( "input", filter );
 
-	var selectAllButton = document.getElementById("select-all");
-	selectAllButton.addEventListener("click", function(event) {
+	var selectAllButton = document.getElementById( "select-all" );
+	selectAllButton.addEventListener( "click", function ( event ) {
 		selectAllButton.disabled = true;
 
-		Array.from(document.getElementsByClassName("select-box")).map((x) => x.checked = true);
+		Array.from( document.getElementsByClassName( "select-box" ) ).map( ( x ) => x.checked = true );
 
 		selectAllButton.disabled = false;
-	});
+	} );
 
-	var selectNoneButton = document.getElementById("select-none");
-	selectNoneButton.addEventListener("click", function(event) {
+	var selectNoneButton = document.getElementById( "select-none" );
+	selectNoneButton.addEventListener( "click", function ( event ) {
 		selectNoneButton.disabled = true;
 
-		Array.from(document.getElementsByClassName("select-box")).map((x) => x.checked = false);
+		Array.from( document.getElementsByClassName( "select-box" ) ).map( ( x ) => x.checked = false );
 
 		selectNoneButton.disabled = false;
-	});
+	} );
 
-	var trackAllButton = document.getElementById("track-all");
-	trackAllButton.addEventListener("click", function(event) {
+	var trackAllButton = document.getElementById( "track-all" );
+	trackAllButton.addEventListener( "click", function ( event ) {
 		trackAllButton.disabled = true;
 
-		Array.from(document.getElementsByClassName("track-box")).map((x) => x.checked = true);
+		Array.from( document.getElementsByClassName( "track-box" ) ).map( ( x ) => x.checked = true );
 
 		trackAllButton.disabled = false;
-	});
+	} );
 
-	var trackNoneButton = document.getElementById("track-none");
-	trackNoneButton.addEventListener("click", function(event) {
+	var trackNoneButton = document.getElementById( "track-none" );
+	trackNoneButton.addEventListener( "click", function ( event ) {
 		trackNoneButton.disabled = true;
 
-		Array.from(document.getElementsByClassName("track-box")).map((x) => x.checked = false);
+		Array.from( document.getElementsByClassName( "track-box" ) ).map( ( x ) => x.checked = false );
 
 		trackNoneButton.disabled = false;
-	});
+	} );
 
-	var saveButtons = Array.from(document.getElementsByClassName("save"));
-	saveButtons.map((x) => x.addEventListener( "click", function ( evt ) {
+	var saveButtons = Array.from( document.getElementsByClassName( "save" ) );
+	saveButtons.map( ( x ) => x.addEventListener( "click", function ( evt ) {
 		console.log( "Saved button clicked." );
 		_gaq.push( [ '_trackEvent', "Save", 'clicked' ] );
-		saveButtons.map((x) => x.disabled = true);
-		saveButtons.map((x) => x.innerHTML = "Saving...");
+		saveButtons.map( ( x ) => x.disabled = true );
+		saveButtons.map( ( x ) => x.innerHTML = "Saving..." );
 
 		var selectedRaids = [];
 		for ( var i = 0; i < backgroundPage.raidConfigs.length; i++ ) {
@@ -203,7 +196,7 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 			close: false,
 			id: false
 		};
-		if (document.getElementById( "show-id-input" ).checked) {
+		if ( document.getElementById( "show-id-input" ).checked ) {
 			showSettings.id = true;
 		}
 		if ( document.getElementById( "show-message-input" ).checked ) {
@@ -216,43 +209,18 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 			showSettings.close = true;
 		}
 
-		var viramateID = document.getElementById( "viramate-id-input" ).value;
-
 		chrome.storage.sync.set( {
 			selectedRaids: selectedRaids,
 			trackedRaids: trackedRaids,
 			loudRaids: loudRaids,
-			showSettings: showSettings,
-			viramateID: viramateID
+			showSettings: showSettings
 		}, function () {
 			console.log( "Saved settings!" );
-			saveButtons.map((x) => x.innerHTML = "Saved!");
-			setTimeout(function () {
-				saveButtons.map((x) => x.disabled = false);
-				saveButtons.map((x) => x.innerHTML = "Save");
-			}, 1000);
+			saveButtons.map( ( x ) => x.innerHTML = "Saved!" );
+			setTimeout( function () {
+				saveButtons.map( ( x ) => x.disabled = false );
+				saveButtons.map( ( x ) => x.innerHTML = "Save" );
+			}, 1000 );
 		} );
-	} ));
+	} ) );
 } );
-
-document.getElementById( "viramate-id-input" ).addEventListener( 'keypress', function ( event ) {
-	if ( event.which === 32 ) {
-		document.getElementById( "viramate-id" ).classList.add("error");
-		event.preventDefault();
-	} else {
-		document.getElementById( "viramate-id" ).classList.remove("error");
-	}
-} );
-
-
-var _gaq = _gaq || [];
-_gaq.push( [ '_setAccount', 'UA-48921108-4' ] );
-_gaq.push( [ '_trackPageview' ] );
- ( function () {
-	var ga = document.createElement( 'script' );
-	ga.type = 'text/javascript';
-	ga.async = true;
-	ga.src = 'https://ssl.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName( 'script' )[ 0 ];
-	s.parentNode.insertBefore( ga, s );
-} )();
