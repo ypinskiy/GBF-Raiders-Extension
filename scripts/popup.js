@@ -157,7 +157,6 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 
 function JoinButtonClicked( id ) {
 	console.log( "Join button clicked. ID: " + id );
-	_gaq.push( [ '_trackEvent', "Join", 'clicked' ] );
 
 	try {
 		var raidLabel = document.getElementById( id + '-label' );

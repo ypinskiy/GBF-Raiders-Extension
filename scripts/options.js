@@ -159,7 +159,6 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 	var saveButtons = Array.from( document.getElementsByClassName( "save" ) );
 	saveButtons.map( ( x ) => x.addEventListener( "click", function ( evt ) {
 		console.log( "Saved button clicked." );
-		_gaq.push( [ '_trackEvent', "Save", 'clicked' ] );
 		saveButtons.map( ( x ) => x.disabled = true );
 		saveButtons.map( ( x ) => x.innerHTML = "Saving..." );
 
