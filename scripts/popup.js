@@ -79,9 +79,16 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = backgroundPage.raids[ i ].id + '-btn';
-			button.classList.add( "ui", "tiny", "button" );
-			button.classList.add( "primary" );
-			button.innerHTML = "Join";
+			if ( backgroundPage.raids[ i ].status == "unclicked" ) {
+				button.classList.add( "ui", "tiny", "primary", "button" );
+				button.innerHTML = "Join";
+			} else if ( backgroundPage.raids[ i ].status == "clicked" ) {
+				button.classList.add( "ui", "tiny", "button" );
+				button.innerHTML = "Copied";
+			} else if ( backgroundPage.raids[ i ].status == "error" ) {
+				button.classList.add( "ui", "tiny", "warning", "button" );
+				button.innerHTML = "Error";
+			}
 			button.addEventListener( 'click', function ( evt ) {
 				JoinButtonClicked( evt.target.id.substr( 0, 8 ) );
 			} );
@@ -104,7 +111,7 @@ chrome.runtime.getBackgroundPage( function ( tempBackgroundPage ) {
 
 chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse ) {
 	if ( message.raid ) {
-		console.log( "Received new raid from background page. ID: " + message.raid.id );
+		console.log( "Received new raid from background page.", message );
 		var raidConfig = backgroundPage.FindRaidConfig( message.raid.room );
 		if ( raidConfig !== null ) {
 			console.log( "Found raid config. Adding raid row..." )
@@ -124,8 +131,17 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 			var buttonTD = document.createElement( "td" );
 			var button = document.createElement( "button" );
 			button.id = message.raid.id + '-btn';
-			button.classList.add( "ui", "tiny", "primary", "button" );
-			button.innerHTML = "Join"
+			if ( message.raid.status == "unclicked" ) {
+				button.classList.add( "ui", "tiny", "primary", "button" );
+				button.innerHTML = "Join";
+			} else if ( message.raid.status == "clicked" ) {
+				button.classList.add( "ui", "tiny", "button" );
+				button.innerHTML = "Copied";
+			} else if ( message.raid.status == "error" ) {
+				button.classList.add( "ui", "tiny", "warning", "button" );
+				button.innerHTML = "Error";
+			}
+
 			button.addEventListener( 'click', function ( evt ) {
 				JoinButtonClicked( message.raid.id );
 			} );
@@ -157,7 +173,6 @@ chrome.runtime.onMessage.addListener( function ( message, sender, sendResponse )
 
 function JoinButtonClicked( id ) {
 	console.log( "Join button clicked. ID: " + id );
-
 	try {
 		var raidLabel = document.getElementById( id + '-label' );
 		if ( raidLabel !== null ) {
@@ -171,9 +186,16 @@ function JoinButtonClicked( id ) {
 				document.execCommand( "copy" );
 				selection.removeAllRanges();
 				console.log( "Copied raid ID successfully." );
+				document.getElementById( id + '-btn' ).innerHTML = "Copied";
+				document.getElementById( id + '-btn' ).classList.remove( "primary" );
+				backgroundPage.SetRaidStatus( id, "clicked" );
 			}
 		}
 	} catch ( error ) {
 		console.log( "Error copying ID: " + error );
+		backgroundPage.SetRaidStatus( id, "error" );
+		document.getElementById( id + '-btn' ).innerHTML = "Error";
+		document.getElementById( id + '-btn' ).classList.remove( "primary" );
+		document.getElementById( id + '-btn' ).classList.add( "warning" );
 	}
 }

@@ -204,9 +204,6 @@ chrome.runtime.getBackgroundPage( function ( backgroundPage ) {
 		if ( document.getElementById( "show-time-input" ).checked ) {
 			showSettings.time = true;
 		}
-		if ( document.getElementById( "close-click-input" ).checked ) {
-			showSettings.close = true;
-		}
 
 		chrome.storage.sync.set( {
 			selectedRaids: selectedRaids,

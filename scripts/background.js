@@ -77,6 +77,16 @@ function FindRaid( id ) {
 	return result;
 }
 
+function SetRaidStatus( id, status ) {
+	console.log( `Setting raid status to "${status}" for raid ${id}` );
+	for ( var i = 0; i < raids.length; i++ ) {
+		if ( raids[ i ].id === id ) {
+			raids[ i ].status = status;
+			break;
+		}
+	}
+}
+
 function FindRaidConfig( room ) {
 	var result = null;
 	for ( var i = 0; i < raidConfigs.length; i++ ) {
@@ -193,6 +203,7 @@ socket.on( 'tweet', function ( data ) {
 	console.log( "New raid received. Room: " + data.room + ", ID: " + data.id, data );
 	if ( !DoesRaidExist( data.id ) && !stopped ) {
 		console.log( "Raid with this ID does not exist. Adding to raids array..." );
+		data.status = "unclicked";
 		raids.unshift( data );
 		chrome.runtime.sendMessage( {
 			raid: data
@@ -332,6 +343,7 @@ chrome.notifications.onClicked.addListener( function ( notificationId ) {
 			document.execCommand( "copy" );
 			selection.removeAllRanges();
 			console.log( "Copied raid ID successfully." );
+			SetRaidStatus( raidID, "clicked" );
 		}
 	}
 } );
